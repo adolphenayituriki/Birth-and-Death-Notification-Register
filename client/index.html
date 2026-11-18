@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Birth and Death Notification Register — submit and review civil registration notifications."
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/png" href="/Logo%20Baby%20Footprints%20in%20Blue%20and%20Green.png" />
+    <title>Birth &amp; Death — Notification Register</title>
+    <script>
+      try {
+        if (localStorage.getItem('register-theme') === 'dark') {
+          document.documentElement.dataset.theme = 'dark'
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#071a2b')
+        }
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

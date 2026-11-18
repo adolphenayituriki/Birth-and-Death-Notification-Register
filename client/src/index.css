@@ -1,0 +1,1008 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-ink: #0d2b45;
+  --color-muted: #5f7b94;
+  --color-muted-2: #8199ad;
+  --color-line: #dbe9f5;
+  --color-line-strong: #bed5e8;
+  --color-water-50: #f2faff;
+  --color-water-100: #e0f2ff;
+  --color-water-200: #bae6fd;
+  --color-water-300: #7dd3fc;
+  --color-water-400: #38bdf8;
+  --color-water-500: #0ea5e9;
+  --color-water-600: #0284c7;
+  --color-water-700: #0369a1;
+  --color-water-800: #075985;
+  --color-water-900: #0c4a6e;
+  --color-water-950: #082f49;
+  --color-success: #059669;
+  --color-brand-green: #0da91d;
+  --color-danger: #e11d48;
+  --color-warning: #d97706;
+  --color-info: #2563eb;
+  --radius-card: 22px;
+  --shadow-card: 0 20px 55px -28px rgba(7, 89, 133, 0.45);
+  --shadow-float: 0 35px 90px -30px rgba(7, 89, 133, 0.55);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+    background: #ffffff;
+  }
+
+  body {
+    margin: 0;
+    @apply bg-white text-ink antialiased;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  p {
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.03em;
+  }
+
+  code,
+  pre {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  ::selection {
+    background: rgba(14, 165, 233, 0.22);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(14, 165, 233, 0.04);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full border-2 border-transparent bg-water-200 bg-clip-content;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-transparent px-4 py-2.5 text-[13px] font-bold transition duration-200 hover:-translate-y-px;
+  }
+
+  .btn-primary {
+    @apply bg-water-600 text-white shadow-lg shadow-water-600/25 hover:bg-water-700;
+  }
+
+  .btn-secondary {
+    @apply border-line-strong bg-white text-ink hover:bg-water-50;
+  }
+
+  .btn-ghost {
+    @apply border-line bg-white/75 text-muted hover:border-water-200 hover:bg-white hover:text-water-700;
+  }
+
+  .btn-light {
+    @apply border-white bg-white text-water-700 shadow-lg shadow-water-900/20 hover:bg-water-50;
+  }
+
+  .btn-outline-light {
+    @apply border-white/35 bg-white/10 text-white hover:border-white/60 hover:bg-white/20;
+  }
+
+  .btn-danger {
+    @apply border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100;
+  }
+
+  .btn-block {
+    @apply w-full;
+  }
+
+  .icon-button {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-white/80 text-muted transition hover:border-water-300 hover:bg-water-50 hover:text-water-700;
+  }
+
+  .theme-toggle {
+    @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-line bg-white text-muted transition hover:border-water-300 hover:bg-water-50 hover:text-water-700;
+  }
+
+  .eyebrow {
+    @apply mb-2 inline-block text-[10px] font-extrabold uppercase tracking-[0.18em] text-water-600;
+  }
+
+  .eyebrow-light {
+    @apply text-water-100/85;
+  }
+
+  .field {
+    @apply grid gap-2;
+  }
+
+  .field > span,
+  .field > legend {
+    @apply text-xs font-bold text-ink;
+  }
+
+  .field input,
+  .field select,
+  .field textarea,
+  .search-field input,
+  .select-field select {
+    @apply w-full rounded-xl border border-line-strong bg-white px-3.5 py-3 text-sm text-ink outline-none transition placeholder:text-muted-2 focus:border-water-400 focus:ring-4 focus:ring-water-500/12;
+  }
+
+  .field textarea {
+    @apply resize-y leading-relaxed;
+  }
+
+  .field-help {
+    @apply text-right text-[11px] text-muted-2;
+  }
+
+  .input-with-icon {
+    @apply relative;
+  }
+
+  .input-with-icon svg {
+    @apply pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-water-500;
+  }
+
+  .input-with-icon input {
+    @apply pl-10 pr-16;
+  }
+
+  .password-toggle {
+    @apply absolute right-2.5 top-1/2 -translate-y-1/2 border-0 bg-transparent text-[11px] font-bold text-water-600;
+  }
+
+  .landing-shell {
+    @apply min-h-screen bg-white;
+  }
+
+  .landing-nav {
+    @apply sticky top-0 z-50 flex h-[76px] items-center justify-between gap-4 border-b border-line bg-white px-6 lg:px-12;
+  }
+
+  #home,
+  #features,
+  #how-it-works,
+  #contact {
+    scroll-margin-top: 92px;
+  }
+
+  .landing-nav-brand {
+    @apply flex items-center gap-3 border-0 bg-transparent text-left text-ink;
+  }
+
+  .landing-nav-brand .brand-mark {
+    @apply h-10 w-10 rounded-xl;
+  }
+
+  .landing-nav-brand strong {
+    @apply block text-[13px] font-extrabold;
+  }
+
+  .landing-nav-brand small {
+    @apply block text-[10px] text-muted-2;
+  }
+
+  .landing-nav-links {
+    @apply hidden items-center gap-6 md:flex;
+  }
+
+  .landing-nav-link {
+    @apply rounded-lg border-0 bg-transparent px-3 py-2 text-[12px] font-semibold text-muted transition hover:bg-water-50 hover:text-water-700;
+  }
+
+  .landing-nav-link-active {
+    @apply bg-water-50 text-water-700;
+  }
+
+  .landing-nav-actions {
+    @apply flex items-center gap-2;
+  }
+
+  .landing-signin {
+    @apply px-4 py-2 text-[12px];
+  }
+
+  .landing-create {
+    @apply px-4 py-2 text-[12px];
+  }
+
+  .landing-menu-button {
+    display: none;
+  }
+
+  .landing-nav-mobile {
+    @apply absolute left-4 right-4 top-[70px] grid gap-1 rounded-2xl border border-line bg-white p-3 shadow-card md:hidden;
+  }
+
+  .landing-nav-mobile .landing-nav-link {
+    @apply rounded-xl px-3 py-2.5 text-left hover:bg-water-50;
+  }
+
+  .login-page {
+    @apply relative grid overflow-hidden;
+  }
+
+  .login-aurora {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+  }
+
+  .login-aurora-one {
+    bottom: -180px;
+    left: -150px;
+    width: 460px;
+    height: 460px;
+    background: rgba(14, 165, 233, 0.28);
+  }
+
+  .login-aurora-two {
+    right: -120px;
+    top: -160px;
+    width: 420px;
+    height: 420px;
+    background: rgba(56, 189, 248, 0.25);
+  }
+
+  .login-showcase {
+    @apply relative grid content-start gap-y-5 bg-water-600 px-8 py-9 text-white lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-start lg:gap-x-12 lg:px-16 lg:pb-9 lg:pt-7;
+  }
+
+  .login-showcase > :not(.login-aurora):not(.hero-bg-image) {
+    @apply relative z-10;
+  }
+
+  .hero-bg-image {
+    @apply pointer-events-none absolute inset-0 overflow-hidden;
+    z-index: 0;
+  }
+
+  .hero-bg-slide {
+    position: absolute;
+    inset: -4%;
+    z-index: 0;
+    opacity: 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .hero-bg-slide-one {
+    opacity: 1;
+    background-image: url('/Birth%20and%20Death%20Registration%20Banner.png');
+    animation: hero-slide-a 16s ease-in-out infinite;
+  }
+
+  .hero-bg-slide-two {
+    background-image: url('/Celebrating%20New%20Beginnings%20Together.png');
+    animation: hero-slide-b 16s ease-in-out infinite;
+  }
+
+  .hero-bg-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: rgba(3, 105, 161, 0.82);
+  }
+
+  @keyframes hero-slide-a {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    45% {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+    50% {
+      opacity: 0;
+      transform: scale(1.08);
+    }
+    95% {
+      opacity: 0;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes hero-slide-b {
+    0% {
+      opacity: 0;
+      transform: scale(1.08);
+    }
+    45% {
+      opacity: 0;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    95% {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.08);
+    }
+  }
+
+  .login-showcase::before,
+  .login-showcase::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    display: none;
+    top: -8%;
+    bottom: -8%;
+    border-radius: 50% 0 0 50% / 50% 0 0 50%;
+    transform: skewX(-7deg);
+    pointer-events: none;
+  }
+
+  .login-showcase::before {
+    right: -112px;
+    width: 190px;
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .login-showcase::after {
+    right: -84px;
+    width: 130px;
+    background: #ffffff;
+  }
+
+  .login-brand {
+    @apply col-span-full flex items-center gap-3;
+  }
+
+  .brand-mark {
+    @apply inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-water-500 to-water-700 text-white shadow-lg shadow-water-600/25;
+  }
+
+  .brand-mark-large {
+    @apply h-12 w-12 rounded-2xl;
+  }
+
+  .brand-mark-logo {
+    @apply p-0 shadow-none ring-0;
+    background: transparent;
+  }
+
+  .brand-logo {
+    @apply h-full w-full rounded-[inherit] object-contain;
+  }
+
+  .landing-footer-mark {
+    @apply grid h-10 w-10 shrink-0 place-items-center rounded-xl p-0 shadow-none ring-0;
+    background: transparent;
+  }
+
+  .landing-footer-logo {
+    @apply h-full w-full rounded-[inherit] object-contain;
+  }
+
+  .login-brand strong {
+    @apply block text-lg font-extrabold tracking-tight text-white;
+  }
+
+  .login-brand small {
+    @apply mt-0.5 block text-[11px] text-water-100/80;
+  }
+
+  .brand-copy strong {
+    @apply block text-[15px] font-extrabold tracking-tight text-ink;
+  }
+
+  .brand-copy small {
+    @apply mt-0.5 block text-[10px] text-muted-2;
+  }
+
+  .showcase-copy {
+    @apply mt-0 max-w-[620px];
+  }
+
+  .showcase-copy h1 {
+    @apply text-[clamp(34px,3.4vw,52px)] font-extrabold leading-[1.06];
+  }
+
+  .showcase-copy h1 span {
+    @apply text-water-100;
+  }
+
+  .showcase-copy p {
+    @apply mt-3 max-w-[560px] text-sm leading-relaxed text-water-50/90;
+  }
+
+  .showcase-actions {
+    @apply mt-5 flex flex-wrap gap-3;
+  }
+
+  .showcase-visual {
+    @apply relative mt-0 w-full;
+  }
+
+  .showcase-image-frame {
+    @apply relative overflow-hidden rounded-[22px] bg-white p-[3px] shadow-[0_22px_60px_-34px_rgba(2,48,71,0.85)];
+    background-image: linear-gradient(
+      to bottom,
+      #0284c7 0 33.33%,
+      #0da91d 33.33% 66.66%,
+      #ffffff 66.66% 100%
+    );
+    background-size: 100% 100%;
+    animation: frame-colors 12s steps(1, end) infinite;
+  }
+
+  .showcase-image-frame::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 19px;
+    background: #eef8ff;
+    pointer-events: none;
+  }
+
+  .showcase-image-frame img {
+    @apply relative block max-h-[300px] w-full rounded-2xl bg-transparent object-cover object-center;
+    aspect-ratio: 16 / 9;
+  }
+
+  @keyframes frame-colors {
+    0%,
+    30% {
+      background-image: linear-gradient(
+        to bottom,
+        #0284c7 0 33.33%,
+        #0da91d 33.33% 66.66%,
+        #ffffff 66.66% 100%
+      );
+    }
+    33.33%,
+    63.33% {
+      background-image: linear-gradient(
+        to bottom,
+        #ffffff 0 33.33%,
+        #0284c7 33.33% 66.66%,
+        #0da91d 66.66% 100%
+      );
+    }
+    66.66%,
+    96.66% {
+      background-image: linear-gradient(
+        to bottom,
+        #0da91d 0 33.33%,
+        #ffffff 33.33% 66.66%,
+        #0284c7 66.66% 100%
+      );
+    }
+    100% {
+      background-image: linear-gradient(
+        to bottom,
+        #0284c7 0 33.33%,
+        #0da91d 33.33% 66.66%,
+        #ffffff 66.66% 100%
+      );
+    }
+  }
+
+  .hero-secondary {
+    @apply relative overflow-hidden bg-[#f4fbf5] px-8 py-12 text-ink lg:px-16 lg:py-14;
+  }
+
+  .hero-secondary::before {
+    content: '';
+    position: absolute;
+    right: -70px;
+    top: 50%;
+    width: 420px;
+    height: 420px;
+    transform: translateY(-50%);
+    background: url('/Logo%20Baby%20Footprints%20in%20Blue%20and%20Green.png') center / contain no-repeat;
+    mix-blend-mode: multiply;
+    opacity: 0.08;
+    pointer-events: none;
+  }
+
+  .hero-secondary-inner {
+    @apply relative z-10 mx-auto grid max-w-[1400px] items-center gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)];
+  }
+
+  .hero-secondary .eyebrow {
+    @apply text-brand-green;
+  }
+
+  .secondary-copy h2 {
+    @apply text-[clamp(26px,2.6vw,38px)] font-extrabold leading-tight;
+  }
+
+  .secondary-copy > p {
+    @apply mt-3 max-w-[600px] text-sm leading-relaxed text-muted;
+  }
+
+  .work-steps {
+    @apply mt-5 grid gap-2.5 sm:grid-cols-3;
+  }
+
+  .work-step {
+    @apply flex items-start gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-line;
+  }
+
+  .work-step-number {
+    @apply grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand-green text-xs font-extrabold text-white;
+  }
+
+  .work-step strong,
+  .work-step small {
+    @apply block;
+  }
+
+  .work-step strong {
+    @apply text-[12px] font-extrabold text-ink;
+  }
+
+  .work-step small {
+    @apply mt-0.5 text-[10px] leading-relaxed text-muted;
+  }
+
+  .secondary-features {
+    @apply mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-4 text-[11px] text-muted;
+  }
+
+  .secondary-features span {
+    @apply inline-flex items-center gap-2;
+  }
+
+  .secondary-features svg {
+    @apply text-brand-green;
+  }
+
+  .secondary-visual {
+    @apply w-full lg:max-w-[520px] lg:justify-self-end;
+  }
+
+  .showcase-thumb {
+    @apply overflow-hidden rounded-2xl bg-white p-2 shadow-[0_22px_60px_-34px_rgba(2,48,71,0.35)] ring-1 ring-line;
+  }
+
+  .showcase-thumb img {
+    @apply block max-h-[210px] w-full rounded-xl bg-white object-contain;
+  }
+
+  .showcase-thumb span {
+    @apply mt-2 flex items-center gap-1.5 px-2 pb-1 text-[10px] font-extrabold text-ink;
+  }
+
+  .secondary-visual-caption {
+    @apply relative mt-3 flex items-center gap-3 overflow-hidden rounded-2xl bg-white p-3 shadow-sm ring-1 ring-line;
+  }
+
+  .secondary-visual-caption::before {
+    content: '';
+    position: absolute;
+    inset: -12%;
+    background: url('/Celebrating%20New%20Beginnings%20Together.png') center / cover no-repeat;
+    opacity: 0.14;
+    animation: caption-drift 14s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  .secondary-visual-caption > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes caption-drift {
+    from {
+      transform: scale(1.04) translate3d(-2%, 0, 0);
+    }
+    to {
+      transform: scale(1.1) translate3d(2%, -1%, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .secondary-visual-caption::before {
+      animation: none;
+    }
+  }
+
+  .secondary-visual-icon {
+    @apply grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-brand-green bg-white text-brand-green;
+  }
+
+  .secondary-visual-caption strong,
+  .secondary-visual-caption small {
+    @apply block;
+  }
+
+  .secondary-visual-caption strong {
+    @apply text-[12px] font-extrabold text-ink;
+  }
+
+  .secondary-visual-caption small {
+    @apply mt-0.5 text-[10px] text-muted;
+  }
+
+  #home,
+  #features,
+  #how-it-works,
+  #get-started,
+  #contact {
+    scroll-margin-top: 92px;
+  }
+
+  .landing-cta {
+    @apply relative flex flex-wrap items-center justify-between gap-6 overflow-hidden border-y border-emerald-200 bg-emerald-50 px-6 py-10 text-ink lg:px-16;
+  }
+
+  .landing-cta::before {
+    content: '';
+    position: absolute;
+    inset: -12%;
+    background: url('/Celebrating%20New%20Beginnings%20Together.png') center / cover no-repeat;
+    opacity: 0.12;
+    animation: caption-drift 18s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  .landing-cta .eyebrow {
+    @apply text-emerald-700;
+  }
+
+  .landing-cta-copy {
+    @apply relative z-10 max-w-[560px];
+  }
+
+  .landing-cta-copy h2 {
+    @apply text-[clamp(22px,2.1vw,30px)] font-extrabold leading-tight text-ink;
+  }
+
+  .landing-cta-copy p {
+    @apply mt-2 text-[13px] leading-relaxed text-muted;
+  }
+
+  .landing-cta-actions {
+    @apply relative z-10 flex flex-wrap gap-3;
+  }
+
+  .landing-cta .btn-primary {
+    @apply bg-brand-green text-white shadow-brand-green/25 hover:bg-[#099518];
+  }
+
+  .landing-cta .btn-secondary {
+    @apply border-line-strong bg-white text-ink hover:bg-water-50;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-cta::before {
+      animation: none;
+    }
+  }
+
+  .landing-footer {
+    @apply border-t border-water-100 bg-water-50 px-6 py-8 lg:px-12;
+  }
+
+  .landing-footer-grid {
+    @apply mx-auto grid max-w-[1400px] gap-6 md:grid-cols-[1.45fr_0.6fr_1fr];
+  }
+
+  .landing-footer-brand-row {
+    @apply flex items-center gap-3;
+  }
+
+  .landing-footer-brand-row strong {
+    @apply block text-sm font-extrabold text-ink;
+  }
+
+  .landing-footer-kicker {
+    @apply mt-0.5 block text-[9px] font-bold uppercase tracking-[0.16em] text-water-600;
+  }
+
+  .landing-footer-brand p {
+    @apply mt-3 max-w-[350px] text-[11px] leading-relaxed text-muted;
+  }
+
+  .landing-footer h4 {
+    @apply mb-2.5 text-[9px] font-extrabold uppercase tracking-[0.16em] text-ink;
+  }
+
+  .landing-footer ul {
+    @apply grid gap-1.5;
+  }
+
+  .landing-footer li button {
+    @apply inline-flex items-center gap-2 border-0 bg-transparent p-0 text-[11px] font-medium text-muted transition hover:text-water-700;
+  }
+
+  .landing-footer li button::before {
+    content: '';
+    @apply h-1 w-1 rounded-full bg-water-300 transition;
+  }
+
+  .landing-footer li button:hover::before {
+    @apply bg-brand-green;
+  }
+
+  .landing-footer-project {
+    @apply rounded-2xl border border-water-100 bg-white/80 p-4;
+  }
+
+  .landing-footer-details {
+    @apply grid gap-1.5;
+  }
+
+  .landing-footer-details span {
+    @apply inline-flex items-start gap-2 text-[10.5px] leading-relaxed text-muted;
+  }
+
+  .landing-footer-details svg {
+    @apply mt-0.5 shrink-0 text-water-600;
+  }
+
+  .landing-footer-bottom {
+    @apply -mx-6 mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-water-200 bg-water-100/60 px-6 py-3 text-[10px] text-muted lg:-mx-12 lg:px-12;
+  }
+
+  .landing-footer-bottom-meta {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  .landing-footer-top {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-water-200 bg-white px-3 py-1 text-[10px] font-bold text-water-700 transition hover:border-water-300 hover:bg-water-100;
+  }
+
+  .login-panel {
+    @apply relative flex items-center justify-center bg-white px-7 py-12;
+  }
+
+  .login-card {
+    @apply w-full max-w-[420px] rounded-[24px] border border-line bg-white p-8 shadow-card;
+  }
+
+  .login-card h2 {
+    @apply text-[24px] font-extrabold leading-tight text-ink;
+  }
+
+  .login-card > p {
+    @apply mt-1.5 text-[12px] leading-relaxed text-muted;
+  }
+
+  .auth-mode-switch {
+    @apply mb-4 grid grid-cols-2 gap-1 rounded-xl border border-line bg-water-50 p-1;
+  }
+
+  .auth-mode-switch button {
+    @apply rounded-lg border-0 bg-transparent px-3 py-2 text-[11px] font-bold text-muted transition hover:text-water-700;
+  }
+
+  .auth-mode-switch button.is-active {
+    @apply bg-white text-water-700 shadow-sm;
+  }
+
+  .role-picker {
+    @apply my-4 grid grid-cols-2 gap-2;
+  }
+
+  .role-option {
+    @apply flex items-center gap-2 rounded-xl border border-line bg-white p-2.5 text-left text-muted transition hover:border-water-200 hover:bg-water-50;
+  }
+
+  .role-option svg {
+    @apply shrink-0;
+  }
+
+  .role-option strong,
+  .role-option small {
+    @apply block;
+  }
+
+  .role-option strong {
+    @apply text-[11px] font-bold text-ink;
+  }
+
+  .role-option small {
+    @apply mt-0.5 text-[9px] leading-tight text-muted-2;
+  }
+
+  .role-option-active {
+    @apply border-water-400 bg-water-50 text-water-700 ring-4 ring-water-500/10;
+  }
+
+  .role-picker-compact {
+    @apply my-0 grid-cols-1;
+  }
+
+  .role-picker-compact .role-option {
+    @apply p-2.5;
+  }
+
+  .role-picker-compact .role-option span {
+    @apply text-[11px] font-bold;
+  }
+
+  .login-form {
+    @apply grid gap-3;
+  }
+
+  .auth-note {
+    @apply mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-line pt-3 text-[10px] text-muted-2;
+  }
+
+  .auth-note svg {
+    @apply shrink-0 text-water-600;
+  }
+
+  .auth-overlay {
+    @apply fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-ink/55 p-4 backdrop-blur-sm sm:p-6;
+  }
+
+  .auth-dialog {
+    @apply relative max-h-[calc(100vh-2rem)] w-full max-w-[440px] overflow-y-auto rounded-[24px] border border-line bg-white p-5 shadow-float sm:p-6;
+    animation: auth-pop 0.18s ease-out;
+  }
+
+  .auth-close {
+    @apply absolute right-4 top-4;
+  }
+
+  .auth-dialog-head {
+    @apply mb-3 flex items-center gap-3 pr-10;
+  }
+
+  .auth-dialog-head strong {
+    @apply block text-[13px] font-extrabold text-ink;
+  }
+
+  .auth-dialog-head small {
+    @apply block text-[10px] text-muted-2;
+  }
+
+  .auth-dialog .login-card {
+    @apply max-w-none border-0 bg-transparent p-0 shadow-none;
+  }
+
+  .auth-dialog .field {
+    @apply gap-1.5;
+  }
+
+  .auth-dialog .field > span {
+    @apply text-[10px] uppercase tracking-[0.08em] text-muted;
+  }
+
+  .auth-dialog .field input {
+    @apply py-2.5 text-[13px];
+  }
+
+  .auth-dialog .input-with-icon input {
+    @apply pl-9 pr-14;
+  }
+
+  .auth-dialog .input-with-icon svg {
+    @apply left-3;
+  }
+
+  .auth-dialog .password-toggle {
+    @apply right-2 text-[10px];
+  }
+
+  @keyframes auth-pop {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .landing-menu-button {
+      display: inline-flex;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .login-showcase::before,
+    .login-showcase::after {
+      display: block;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .landing-nav {
+      @apply h-[68px] px-4;
+    }
+
+    .landing-nav-brand strong {
+      @apply text-[11px];
+    }
+
+    .landing-nav-brand small,
+    .landing-create {
+      display: none;
+    }
+
+    .landing-nav-brand .brand-mark {
+      @apply h-9 w-9;
+    }
+
+    .login-showcase,
+    .login-panel,
+    .hero-secondary {
+      @apply px-5 py-9;
+    }
+
+    .hero-secondary::before {
+      width: 260px;
+      height: 260px;
+      right: -60px;
+      opacity: 0.06;
+    }
+
+    .login-card {
+      @apply p-6;
+    }
+
+    .role-picker {
+      @apply grid-cols-1;
+    }
+
+    .landing-footer {
+      @apply px-5 py-7;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-bg-slide,
+    .showcase-image-frame {
+      animation: none;
+    }
+  }
+}
