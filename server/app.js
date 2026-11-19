@@ -2,6 +2,7 @@ import cors from 'cors'
 import express from 'express'
 import { authenticate, authorize, googleSignIn, login, publicUser, signup } from './auth.js'
 import { AppError, badRequest, notFound, unauthorized } from './errors.js'
+import { openApiSpec, swaggerHtml } from './openapi.js'
 import {
   createNotification,
   deleteNotification,
@@ -120,6 +121,14 @@ app.get('/api/health', (_req, res) => {
     uptimeSeconds: Math.round(process.uptime()),
     timestamp: new Date().toISOString(),
   })
+})
+
+app.get('/api/openapi.json', (_req, res) => {
+  res.json(openApiSpec)
+})
+
+app.get('/api/docs', (_req, res) => {
+  res.type('html').send(swaggerHtml)
 })
 
 app.post(

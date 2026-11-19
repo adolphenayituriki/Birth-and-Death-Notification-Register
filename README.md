@@ -119,7 +119,7 @@ A unique index on `{ person_name: 1, event_date: 1 }` plus an API pre-check bloc
 
 ## API
 
-All responses are JSON. Every endpoint except `/api/health` and auth requires `Authorization: Bearer <token>`.
+All responses are JSON. Every endpoint except `/api/health`, `/api/docs`, `/api/openapi.json`, and auth requires `Authorization: Bearer <token>`.
 
 | Method | Endpoint | Role | Purpose |
 | --- | --- | --- | --- |
@@ -146,6 +146,12 @@ Sort syntax is `field:direction`, for example `?sort=person_name:asc` or `?sort=
 ```
 
 Errors use `{ "error": { "message": "...", "code": "..." } }`. Codes include `VALIDATION_ERROR`, `FUTURE_EVENT_DATE`, `DUPLICATE_NOTIFICATION`, `NOTIFICATION_NOT_FOUND`, `FORBIDDEN`, `EMAIL_TAKEN`, `GOOGLE_NOT_CONFIGURED` and `ROUTE_NOT_FOUND`.
+
+### API documentation
+
+Swagger UI is available at `/api/docs`, and the raw OpenAPI document is available at `/api/openapi.json`. Both are public and work through the Vercel `/api` rewrite to the Render backend.
+
+In Swagger UI, click **Authorize**, paste the JWT returned by signup, login, or Google sign-in, then use **Try it out** on protected endpoints. Health workers can create and read notifications; registrars can also update, delete, review, and view analytics.
 
 ## Server logs
 
