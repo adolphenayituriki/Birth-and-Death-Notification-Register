@@ -12,8 +12,8 @@ export const badRequest = (message, code = 'VALIDATION_ERROR', details) =>
 
 export const notFound = (message, code = 'NOT_FOUND') => new AppError(404, code, message)
 
-export const unauthorized = (message = 'Please log in to continue') =>
-  new AppError(401, 'UNAUTHORIZED', message)
+export const unauthorized = (message = 'Please log in to continue', code = 'UNAUTHORIZED') =>
+  new AppError(401, code, message)
 
 export const forbidden = (message = 'You do not have permission to do that') =>
   new AppError(403, 'FORBIDDEN', message)

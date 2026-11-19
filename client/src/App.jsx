@@ -107,9 +107,9 @@ export default function App() {
     return () => clearTimeout(timer)
   }, [toast])
 
-  const onAuth = (user) => {
+  const onAuth = (user, message) => {
     setSession(user)
-    notify(`Welcome, ${user.name?.split(' ')[0]}!`)
+    notify(message || `Welcome, ${user.name?.split(' ')[0]}!`)
     navigate(user.role === 'registrar' ? '/review-queue' : '/overview')
   }
 

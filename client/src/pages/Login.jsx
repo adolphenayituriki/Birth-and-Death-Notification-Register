@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { apiEndpoints, setStoredToken, setStoredUser } from '../api.js'
+import { ApiError, apiEndpoints, setStoredToken, setStoredUser } from '../api.js'
 import Icon from '../components/Icon.jsx'
 import ThemeToggle from '../components/ThemeToggle.jsx'
 import { InlineNotice } from '../components/StateViews.jsx'
@@ -89,6 +89,12 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
     onAuthRef.current = onAuth
   }, [onAuth])
 
+  const completeAuth = (result, fallbackMessage) => {
+    setStoredToken(result.token)
+    setStoredUser(result.user)
+    onAuthRef.current(result.user, result.message || fallbackMessage)
+  }
+
   useEffect(() => {
     if (!authOpen || !googleClientId) return undefined
     let active = true
@@ -112,9 +118,7 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
               const result = await apiEndpoints.google({
                 accessToken: tokenResponse.access_token,
               })
-              setStoredToken(result.token)
-              setStoredUser(result.user)
-              onAuthRef.current(result.user)
+              completeAuth(result, 'Signed in with Google.')
             } catch (failure) {
               setError(failure.message)
             } finally {
@@ -211,10 +215,24 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
               password: form.password,
             })
           : await apiEndpoints.login({ email: form.email, password: form.password })
-      setStoredToken(result.token)
-      setStoredUser(result.user)
-      onAuth(result.user)
+      completeAuth(result, mode === 'signup' ? 'Account created. Welcome!' : 'Signed in successfully.')
     } catch (failure) {
+      if (failure instanceof ApiError) {
+        if (failure.code === 'EMAIL_TAKEN') {
+          setMode('login')
+          setForm((current) => ({ ...current, password: '' }))
+          setError('That email is already registered. Sign in instead, or continue with Google.')
+          return
+        }
+        if (failure.code === 'EMAIL_NOT_REGISTERED') {
+          setError('No account is registered with that email. Switch to Create account or continue with Google.')
+          return
+        }
+        if (failure.code === 'GOOGLE_SIGNIN_REQUIRED') {
+          setError('This email is linked to Google. Continue with Google, or check your password.')
+          return
+        }
+      }
       setError(failure.message)
     } finally {
       setLoading(false)

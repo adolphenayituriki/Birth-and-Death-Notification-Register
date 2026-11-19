@@ -182,7 +182,34 @@ try {
     'signup must ignore the requested role and create a health worker',
   )
 
-  console.log('API smoke tests passed: 200, 201, 400, 403 and 404 flows verified.')
+  const duplicateSignup = await request('/auth/signup', {
+    method: 'POST',
+    body: {
+      name: 'Duplicate Tester',
+      email: signup.body.user.email,
+      password: 'password123',
+    },
+  })
+  assert(duplicateSignup.status === 400, `duplicate signup expected 400, got ${duplicateSignup.status}`)
+  assert(
+    duplicateSignup.body.error.code === 'EMAIL_TAKEN',
+    'duplicate signup must return EMAIL_TAKEN',
+  )
+
+  const unregisteredLogin = await request('/auth/login', {
+    method: 'POST',
+    body: {
+      email: `missing-${Date.now()}@register.test`,
+      password: 'password123',
+    },
+  })
+  assert(unregisteredLogin.status === 401, `unregistered login expected 401, got ${unregisteredLogin.status}`)
+  assert(
+    unregisteredLogin.body.error.code === 'EMAIL_NOT_REGISTERED',
+    'unregistered login must return EMAIL_NOT_REGISTERED',
+  )
+
+  console.log('API smoke tests passed: 200, 201, 400, 401, 403 and 404 flows verified.')
 } catch (error) {
   console.error(error)
   console.error(serverOutput)

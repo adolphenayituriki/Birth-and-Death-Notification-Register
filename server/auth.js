@@ -40,8 +40,12 @@ export async function signup(body) {
     throw badRequest('Name must be between 2 and 80 characters')
   }
   if (password.length < 6) throw badRequest('Password must be at least 6 characters')
-  if (await findUserByEmail(email)) {
-    throw badRequest('An account with that email already exists', 'EMAIL_TAKEN')
+  const existing = await findUserByEmail(email)
+  if (existing) {
+    const hint = existing.googleId
+      ? 'Sign in or continue with Google.'
+      : 'Sign in instead.'
+    throw badRequest(`That email is already registered. ${hint}`, 'EMAIL_TAKEN')
   }
 
   const user = await createUser({
@@ -57,7 +61,19 @@ export async function signup(body) {
 export async function login(email, password) {
   const credentials = validateCredentials(email, password)
   const user = await findUserByEmail(credentials.email)
-  if (!user || !compareSync(credentials.password, user.passwordHash)) {
+  if (!user) {
+    throw unauthorized(
+      'No account is registered with that email. Create an account or continue with Google.',
+      'EMAIL_NOT_REGISTERED',
+    )
+  }
+  if (!compareSync(credentials.password, user.passwordHash)) {
+    if (user.googleId) {
+      throw unauthorized(
+        'This email is linked to Google. Continue with Google, or check your password.',
+        'GOOGLE_SIGNIN_REQUIRED',
+      )
+    }
     throw unauthorized('Incorrect email or password')
   }
 
@@ -108,16 +124,21 @@ async function googleProfile(accessToken) {
 
 export async function googleSignIn(body) {
   const profile = await googleProfile(body?.accessToken)
-  let user = await findUserByEmail(profile.email)
+  const existingUser = await findUserByEmail(profile.email)
+  let user = existingUser
+  let message = 'Signed in with Google.'
 
   if (user) {
     const userId = (user.id ?? user._id)?.toString()
     if (user.googleId && user.googleId !== profile.googleId) {
-      throw unauthorized('This email is linked to a different Google account')
+      throw unauthorized('This email is linked to a different Google account', 'GOOGLE_ACCOUNT_MISMATCH')
     }
     if (!user.googleId) {
       user = await linkUserGoogleId(userId, profile.googleId)
       if (!user) throw unauthorized('Your account could not be found. Please try again.')
+      message = 'Google linked to your existing registered account.'
+    } else {
+      message = 'Signed in with your registered Google account.'
     }
   } else {
     user = await createUser({
@@ -128,9 +149,16 @@ export async function googleSignIn(body) {
       googleId: profile.googleId,
       passwordHash: hashSync(randomBytes(32).toString('hex'), 12),
     })
+    message = 'Google email registered as a health worker.'
   }
 
-  return { token: tokenFor(user), user: publicUser(user) }
+  return {
+    token: tokenFor(user),
+    user: publicUser(user),
+    isNewUser: !existingUser,
+    existingEmail: Boolean(existingUser),
+    message,
+  }
 }
 
 export function authenticate(req, _res, next) {

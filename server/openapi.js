@@ -60,6 +60,15 @@ export const openApiSpec = {
         properties: {
           token: { type: 'string', description: 'JWT to send as `Authorization: Bearer <token>`.' },
           user: { $ref: '#/components/schemas/User' },
+          message: { type: 'string', description: 'Clear sign-in or account status message.' },
+          isNewUser: {
+            type: 'boolean',
+            description: 'Google sign-in only. True when a new account was created.',
+          },
+          existingEmail: {
+            type: 'boolean',
+            description: 'Google sign-in only. True when the email was already registered.',
+          },
         },
       },
       SignupRequest: {
@@ -304,7 +313,7 @@ export const openApiSpec = {
         operationId: 'googleSignIn',
         summary: 'Sign in or sign up with Google',
         description:
-          'Public endpoint. Verifies the Google access token server-side. First-time users become `health_worker`; existing verified emails sign in to their current account.',
+          'Public endpoint. Verifies the Google email with Google before creating or linking an account. First-time emails become `health_worker`; existing verified emails sign in to their current account and are never duplicated. Returns `isNewUser`, `existingEmail`, and a clear `message`.',
         security: [],
         requestBody: {
           required: true,

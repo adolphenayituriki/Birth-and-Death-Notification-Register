@@ -145,7 +145,11 @@ Sort syntax is `field:direction`, for example `?sort=person_name:asc` or `?sort=
 }
 ```
 
-Errors use `{ "error": { "message": "...", "code": "..." } }`. Codes include `VALIDATION_ERROR`, `FUTURE_EVENT_DATE`, `DUPLICATE_NOTIFICATION`, `NOTIFICATION_NOT_FOUND`, `FORBIDDEN`, `EMAIL_TAKEN`, `GOOGLE_NOT_CONFIGURED` and `ROUTE_NOT_FOUND`.
+Errors use `{ "error": { "message": "...", "code": "..." } }`. Codes include `VALIDATION_ERROR`, `FUTURE_EVENT_DATE`, `DUPLICATE_NOTIFICATION`, `NOTIFICATION_NOT_FOUND`, `FORBIDDEN`, `EMAIL_TAKEN`, `EMAIL_NOT_REGISTERED`, `GOOGLE_SIGNIN_REQUIRED`, `GOOGLE_ACCOUNT_MISMATCH`, `GOOGLE_NOT_CONFIGURED` and `ROUTE_NOT_FOUND`.
+
+### Account status and authorization
+
+Signup rejects an already registered email with `EMAIL_TAKEN` and switches the UI to sign-in. Password login reports `EMAIL_NOT_REGISTERED` for unknown emails and `GOOGLE_SIGNIN_REQUIRED` for accounts linked to Google. Google sign-in verifies the email with Google before creating or linking an account; an existing email is linked instead of duplicated, and a different Google account for the same email is rejected with `GOOGLE_ACCOUNT_MISMATCH`. The Google response includes `isNewUser`, `existingEmail`, and a clear `message` for the success toast.
 
 ### API documentation
 
