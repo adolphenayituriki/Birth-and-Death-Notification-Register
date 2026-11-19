@@ -123,11 +123,11 @@ app.get('/api/health', (_req, res) => {
   })
 })
 
-app.get('/api/openapi.json', (_req, res) => {
+app.get(['/api/openapi.json', '/api/OpenAPI_JSON'], (_req, res) => {
   res.json(openApiSpec)
 })
 
-app.get('/api/docs', (_req, res) => {
+app.get(['/api/docs', '/api/Swagger_UI'], (_req, res) => {
   res.type('html').send(swaggerHtml)
 })
 

@@ -214,6 +214,36 @@ export const openApiSpec = {
     },
   },
   paths: {
+    '/Swagger_UI': {
+      get: {
+        tags: ['System'],
+        operationId: 'getSwaggerUi',
+        summary: 'Open Swagger UI',
+        description: 'Alias: `/docs`. Public interactive API documentation.',
+        security: [],
+        responses: {
+          200: {
+            description: 'Swagger UI HTML page.',
+            content: { 'text/html': { schema: { type: 'string' } } },
+          },
+        },
+      },
+    },
+    '/OpenAPI_JSON': {
+      get: {
+        tags: ['System'],
+        operationId: 'getOpenApiJson',
+        summary: 'Get the OpenAPI document',
+        description: 'Alias: `/openapi.json`. Public OpenAPI 3 JSON document.',
+        security: [],
+        responses: {
+          200: {
+            description: 'OpenAPI document.',
+            content: { 'application/json': { schema: { type: 'object' } } },
+          },
+        },
+      },
+    },
     '/health': {
       get: {
         tags: ['System'],
@@ -478,7 +508,7 @@ export const swaggerHtml = `<!doctype html>
   <body>
     <div class="topbar">
       Birth & Death Notification Register API ·
-      <a href="/api/openapi.json">OpenAPI JSON</a>
+      <a href="/api/OpenAPI_JSON">OpenAPI_JSON</a>
     </div>
     <div id="swagger-ui"></div>
     <script src="https://unpkg.com/swagger-ui-dist@5.29.5/swagger-ui-bundle.js"></script>
@@ -486,7 +516,7 @@ export const swaggerHtml = `<!doctype html>
     <script>
       window.onload = () => {
         window.ui = SwaggerUIBundle({
-          url: '/api/openapi.json',
+          url: '/api/OpenAPI_JSON',
           dom_id: '#swagger-ui',
           deepLinking: true,
           persistAuthorization: true,
