@@ -30,6 +30,12 @@ const learningNav = {
   items: [{ path: '/activities', label: 'Classroom activities', icon: 'book' }],
 }
 
+const mobileTabs = [
+  { path: '/overview', label: 'Home', icon: 'dashboard' },
+  { path: '/notifications', label: 'Records', icon: 'layers' },
+  { path: '/create-notification', label: 'New', icon: 'plus', primary: true },
+]
+
 const logo = '/Logo%20Baby%20Footprints%20in%20Blue%20and%20Green.png'
 
 const titles = {
@@ -55,6 +61,18 @@ export default function Shell({ user, path, navigate, onLogout, theme, onToggleT
     ...(isRegistrar ? registrarNav : []),
     learningNav,
   ]
+  const tabs = [
+    ...mobileTabs,
+    ...(isRegistrar
+      ? [
+          { path: '/review-queue', label: 'Review', icon: 'shield' },
+          { path: '/analytics', label: 'Stats', icon: 'chart' },
+        ]
+      : [{ path: '/activities', label: 'Learn', icon: 'book' }]),
+  ]
+
+  const isActive = (itemPath) =>
+    path === itemPath || (itemPath === '/notifications' && path.startsWith('/notifications/'))
 
   useEffect(() => setMenuOpen(false), [path])
 
@@ -90,9 +108,7 @@ export default function Shell({ user, path, navigate, onLogout, theme, onToggleT
             <div className="nav-group" key={group.label}>
               <span className="nav-label">{group.label}</span>
               {group.items.map((item) => {
-                const active =
-                  path === item.path ||
-                  (item.path === '/notifications' && path.startsWith('/notifications/'))
+                const active = isActive(item.path)
                 return (
                   <button
                     className={`nav-item ${active ? 'nav-item-active' : ''}`}
@@ -144,11 +160,33 @@ export default function Shell({ user, path, navigate, onLogout, theme, onToggleT
               <Icon name={isRegistrar ? 'shield' : 'user'} size={15} />
               {roleMeta[user.role]?.label || user.role}
             </span>
+            <span className="mobile-avatar" aria-hidden="true">{initials(user.name) || 'U'}</span>
           </div>
         </header>
 
         <main className="page-content">{children}</main>
         <AppFooter />
+        <nav className="mobile-tab-bar" aria-label="Mobile navigation">
+          {tabs.map((item) => {
+            const active = isActive(item.path)
+            return (
+              <button
+                className={`mobile-tab ${active ? 'mobile-tab-active' : ''} ${
+                  item.primary ? 'mobile-tab-primary' : ''
+                }`}
+                type="button"
+                key={item.path}
+                aria-current={active ? 'page' : undefined}
+                onClick={() => go(item.path)}
+              >
+                <span className="mobile-tab-icon">
+                  <Icon name={item.icon} size={item.primary ? 21 : 19} />
+                </span>
+                <span className="mobile-tab-label">{item.label}</span>
+              </button>
+            )
+          })}
+        </nav>
       </div>
     </div>
   )

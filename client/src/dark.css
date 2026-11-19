@@ -675,3 +675,33 @@
   color: rgba(209, 250, 229, 0.82);
 }
 
+:root[data-theme='dark'] .mobile-tab-bar {
+  border-color: #1c3a52;
+  background: rgba(7, 26, 43, 0.96);
+}
+
+:root[data-theme='dark'] .mobile-tab {
+  color: #7f9bb1;
+}
+
+:root[data-theme='dark'] .mobile-tab-active {
+  color: #7dd3fc;
+}
+
+:root[data-theme='dark'] .mobile-tab-active .mobile-tab-icon {
+  background: #103049;
+  color: #7dd3fc;
+}
+
+:root[data-theme='dark'] .mobile-tab-primary .mobile-tab-icon {
+  background: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 10px 22px -8px rgba(2, 132, 199, 0.65);
+}
+
+:root[data-theme='dark'] .mobile-avatar {
+  background: #103049;
+  border: 1px solid #17415f;
+  color: #7dd3fc;
+}
+

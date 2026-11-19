@@ -141,6 +141,14 @@
     display: none;
   }
 
+  .mobile-avatar {
+    display: none;
+  }
+
+  .mobile-tab-bar {
+    display: none;
+  }
+
   .page-content {
     @apply mx-auto w-full max-w-[1480px] flex-1 px-8 pb-10 pt-7;
   }
@@ -1820,7 +1828,72 @@
   }
 
   @media (max-width: 700px) {
-    .app-footer { @apply px-4 py-3.5; }
+    .topbar {
+      @apply px-3.5;
+      height: calc(64px + env(safe-area-inset-top));
+      padding-top: env(safe-area-inset-top);
+    }
+
+    .breadcrumb { display: none; }
+    .topbar h1 { @apply mt-0 text-[17px]; }
+    .topbar-actions { @apply gap-2; }
+    .role-chip { display: none; }
+
+    .mobile-avatar {
+      @apply grid h-8 w-8 place-items-center rounded-xl bg-water-600 text-[11px] font-extrabold text-white;
+    }
+
+    .page-content {
+      @apply px-3.5 pt-4;
+      padding-bottom: calc(96px + env(safe-area-inset-bottom));
+    }
+
+    .app-footer { display: none; }
+    .btn { @apply min-h-[44px]; }
+    input, select, textarea { font-size: 16px; }
+
+    .mobile-tab-bar {
+      @apply fixed inset-x-0 bottom-0 z-30 border-t border-line;
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(14px);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .mobile-tab {
+      @apply relative flex min-h-[60px] flex-col items-center justify-center gap-1 border-0 bg-transparent px-1 pt-1.5 text-[9px] font-bold text-muted-2;
+    }
+
+    .mobile-tab-icon {
+      @apply grid h-7 w-7 place-items-center rounded-xl transition;
+    }
+
+    .mobile-tab-active { @apply text-water-700; }
+    .mobile-tab-active .mobile-tab-icon { @apply bg-water-100 text-water-700; }
+
+    .mobile-tab-active::before {
+      content: '';
+      @apply absolute top-0 h-[2px] w-7 rounded-full bg-water-600;
+    }
+
+    .mobile-tab-primary .mobile-tab-icon {
+      @apply h-10 w-10 rounded-2xl bg-water-600 text-white;
+      margin-top: -14px;
+      box-shadow: 0 10px 22px -8px rgba(2, 132, 199, 0.85);
+    }
+
+    .mobile-tab-primary .mobile-tab-label {
+      @apply text-water-700;
+      margin-top: -8px;
+    }
+
+    .toast {
+      @apply left-3.5 right-3.5 max-w-none;
+      bottom: calc(76px + env(safe-area-inset-bottom));
+    }
+
     .stat-grid,
     .detail-stat-grid,
     .analytics-metrics,
