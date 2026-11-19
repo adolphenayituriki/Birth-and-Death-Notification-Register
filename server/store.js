@@ -219,6 +219,18 @@ export async function findUserById(id) {
   return memory.users.find((user) => user.id === id) || null
 }
 
+export async function linkUserGoogleId(id, googleId) {
+  if (mode === 'mongodb') {
+    return User.findByIdAndUpdate(id, { $set: { googleId } }, { new: true }).lean()
+  }
+
+  const user = memory.users.find((item) => item.id === id)
+  if (!user) return null
+  user.googleId = googleId
+  user.updatedAt = new Date().toISOString()
+  return user
+}
+
 export async function createUser(values) {
   if (mode === 'mongodb') {
     const user = await new User(values).save()

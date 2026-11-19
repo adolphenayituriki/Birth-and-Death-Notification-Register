@@ -1,6 +1,6 @@
 import cors from 'cors'
 import express from 'express'
-import { authenticate, authorize, login, publicUser, signup } from './auth.js'
+import { authenticate, authorize, googleSignIn, login, publicUser, signup } from './auth.js'
 import { AppError, badRequest, notFound, unauthorized } from './errors.js'
 import {
   createNotification,
@@ -136,6 +136,15 @@ app.post(
   asyncRoute(async (req, res) => {
     const result = await login(req.body?.email, req.body?.password)
     req.logContext = { action: 'login', role: result.user.role, user: result.user.id }
+    res.json(result)
+  }),
+)
+
+app.post(
+  '/api/auth/google',
+  asyncRoute(async (req, res) => {
+    const result = await googleSignIn(req.body || {})
+    req.logContext = { action: 'google_signin', role: result.user.role, user: result.user.id }
     res.json(result)
   }),
 )

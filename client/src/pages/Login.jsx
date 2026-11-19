@@ -1,8 +1,63 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { apiEndpoints, setStoredToken, setStoredUser } from '../api.js'
 import Icon from '../components/Icon.jsx'
 import ThemeToggle from '../components/ThemeToggle.jsx'
 import { InlineNotice } from '../components/StateViews.jsx'
+
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim()
+
+let googleScriptPromise = null
+
+function loadGoogleIdentity() {
+  if (window.google?.accounts?.oauth2) return Promise.resolve(window.google)
+
+  if (!googleScriptPromise) {
+    googleScriptPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.async = true
+      script.defer = true
+      script.onload = () => {
+        if (window.google?.accounts?.oauth2) {
+          resolve(window.google)
+          return
+        }
+        googleScriptPromise = null
+        reject(new Error('Google Identity Services did not load'))
+      }
+      script.onerror = () => {
+        googleScriptPromise = null
+        reject(new Error('Google Identity Services could not be loaded'))
+      }
+      document.head.appendChild(script)
+    })
+  }
+
+  return googleScriptPromise
+}
+
+function GoogleIcon() {
+  return (
+    <svg className="google-icon" viewBox="0 0 48 48" aria-hidden="true">
+      <path
+        fill="#EA4335"
+        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"
+      />
+      <path
+        fill="#4285F4"
+        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M10.53 28.59a14.1 14.1 0 0 1 0-9.18l-7.98-6.19A24 24 0 0 0 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19Z"
+      />
+      <path
+        fill="#34A853"
+        d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"
+      />
+    </svg>
+  )
+}
 
 const assets = {
   logo: '/Logo%20Baby%20Footprints%20in%20Blue%20and%20Green.png',
@@ -11,10 +66,10 @@ const assets = {
 }
 
 const navLinks = [
-  { id: 'home', label: 'Home' },
-  { id: 'features', label: 'Features' },
-  { id: 'how-it-works', label: 'How it works' },
-  { id: 'contact', label: 'Contact' },
+  { id: 'home', label: 'Home', icon: 'dashboard' },
+  { id: 'features', label: 'Features', icon: 'sparkle' },
+  { id: 'how-it-works', label: 'How it works', icon: 'book' },
+  { id: 'contact', label: 'Contact', icon: 'mail' },
 ]
 
 export default function Login({ onAuth, theme, onToggleTheme }) {
@@ -26,6 +81,57 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const tokenClientRef = useRef(null)
+  const onAuthRef = useRef(onAuth)
+
+  useEffect(() => {
+    onAuthRef.current = onAuth
+  }, [onAuth])
+
+  useEffect(() => {
+    if (!authOpen || !googleClientId) return undefined
+    let active = true
+
+    loadGoogleIdentity()
+      .then((google) => {
+        if (!active) return
+        tokenClientRef.current = google.accounts.oauth2.initTokenClient({
+          client_id: googleClientId,
+          scope: 'openid email profile',
+          callback: async (tokenResponse) => {
+            setError('')
+            setGoogleLoading(true)
+            try {
+              if (tokenResponse.error) {
+                throw new Error(tokenResponse.error_description || 'Google sign-in was cancelled')
+              }
+              if (!tokenResponse.access_token) {
+                throw new Error('Google did not return an access token')
+              }
+              const result = await apiEndpoints.google({
+                accessToken: tokenResponse.access_token,
+              })
+              setStoredToken(result.token)
+              setStoredUser(result.user)
+              onAuthRef.current(result.user)
+            } catch (failure) {
+              setError(failure.message)
+            } finally {
+              setGoogleLoading(false)
+            }
+          },
+        })
+      })
+      .catch(() => {
+        if (active) setError('Google sign-in is unavailable right now. Please try again.')
+      })
+
+    return () => {
+      active = false
+      tokenClientRef.current = null
+    }
+  }, [authOpen])
 
   useEffect(() => {
     if (!authOpen) return undefined
@@ -64,9 +170,28 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
   }
 
   const switchMode = (nextMode) => {
+    if (nextMode === mode) return
     setMode(nextMode)
     setError('')
     setForm({ name: '', email: '', password: '' })
+  }
+
+  const startGoogle = () => {
+    if (!googleClientId) {
+      setError('Google sign-in is not configured for this app yet.')
+      return
+    }
+    if (!tokenClientRef.current) {
+      setError('Google sign-in is still loading. Please try again in a moment.')
+      return
+    }
+
+    setError('')
+    try {
+      tokenClientRef.current.requestAccessToken({ prompt: 'select_account' })
+    } catch {
+      setError('Google sign-in could not be started. Please try again.')
+    }
   }
 
   const update = (key, value) => {
@@ -120,6 +245,7 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
               aria-current={activeSection === link.id ? 'page' : undefined}
               onClick={() => scrollTo(link.id)}
             >
+              <Icon name={link.icon} size={15} />
               {link.label}
             </button>
           ))}
@@ -127,12 +253,16 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
 
         <div className="landing-nav-actions">
           <ThemeToggle theme={theme} onToggle={onToggleTheme} className="theme-toggle-landing" />
-          <button className="btn btn-ghost landing-signin" type="button" onClick={() => openAuth('login')}>
-            Sign in
-          </button>
-          <button className="btn btn-primary landing-create" type="button" onClick={() => openAuth('signup')}>
-            Create account
-          </button>
+          <div className="landing-auth-actions">
+            <button className="btn btn-ghost landing-signin" type="button" onClick={() => openAuth('login')}>
+              <Icon name="user" size={15} />
+              Sign in
+            </button>
+            <button className="btn btn-primary landing-create" type="button" onClick={() => openAuth('signup')}>
+              <Icon name="plus" size={15} />
+              Create account
+            </button>
+          </div>
           <button
             className="icon-button landing-menu-button"
             type="button"
@@ -153,11 +283,20 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
                 aria-current={activeSection === link.id ? 'page' : undefined}
                 onClick={() => scrollTo(link.id)}
               >
+                <Icon name={link.icon} size={16} />
                 {link.label}
               </button>
             ))}
-            <button className="landing-nav-link" type="button" onClick={() => openAuth('login')}>Sign in</button>
-            <button className="landing-nav-link" type="button" onClick={() => openAuth('signup')}>Create account</button>
+            <div className="landing-nav-mobile-auth">
+              <button className="landing-nav-link" type="button" onClick={() => openAuth('login')}>
+                <Icon name="user" size={16} />
+                Sign in
+              </button>
+              <button className="landing-nav-link" type="button" onClick={() => openAuth('signup')}>
+                <Icon name="plus" size={16} />
+                Create account
+              </button>
+            </div>
           </nav>
         ) : null}
       </header>
@@ -189,7 +328,7 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
             </h1>
             <p>
               Health workers submit notifications in minutes. Registrar reviews each record, keeps the
-              audit trail clear, and tracks monthly totals — all in one focused workspace.
+              audit trail clear, and tracks monthly totals, all in one focused workspace.
             </p>
             <div className="showcase-actions">
               <button className="btn btn-light" type="button" onClick={() => openAuth('signup')}>
@@ -324,6 +463,24 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
               <span><Icon name="info" size={14} /> Academic project · 2026</span>
             </div>
           </div>
+
+          <div className="landing-footer-contact">
+            <h4>Contact</h4>
+            <div className="landing-footer-contact-list">
+              <a href="https://www.nayituriki.com" target="_blank" rel="noreferrer">
+                <Icon name="mail" size={14} />
+                www.nayituriki.com
+              </a>
+              <a href="tel:+250780505948">
+                <Icon name="phone" size={14} />
+                +250 780505948
+              </a>
+              <a href="https://adolpheict.vercel.app" target="_blank" rel="noreferrer">
+                <Icon name="globe" size={14} />
+                adolpheict.vercel.app
+              </a>
+            </div>
+          </div>
         </div>
         <div className="landing-footer-bottom">
           <span>© 2026 Birth &amp; Death Notification Register. Learning project.</span>
@@ -344,7 +501,12 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
             if (event.target === event.currentTarget) setAuthOpen(false)
           }}
         >
-          <div className="auth-dialog" role="dialog" aria-modal="true" aria-label="Register account access">
+          <div
+            className={`auth-dialog ${isSignup ? 'auth-dialog-compact' : ''}`}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Register account access"
+          >
             <button
               className="icon-button auth-close"
               type="button"
@@ -365,7 +527,12 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
             </div>
 
             <div className="login-card">
-              <div className="auth-mode-switch" role="group" aria-label="Access mode">
+              <div
+                className={`auth-mode-switch ${isSignup ? 'auth-mode-switch-signup' : ''}`}
+                role="group"
+                aria-label="Access mode"
+              >
+                <span className="auth-mode-switch-thumb" aria-hidden="true" />
                 <button
                   className={!isSignup ? 'is-active' : ''}
                   type="button"
@@ -384,93 +551,107 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
                 </button>
               </div>
 
-              <h2>{isSignup ? 'Create a health worker account' : 'Welcome back'}</h2>
-              <p>
-                {isSignup
-                  ? 'New accounts can submit and track notifications.'
-                  : 'Enter your account details to continue.'}
-              </p>
+              <div key={mode} className={`auth-mode-content auth-mode-content-${mode}`}>
+                <h2>{isSignup ? 'Create your account' : 'Welcome back'}</h2>
+                <p>
+                  {isSignup
+                    ? 'Submit and track health event notifications.'
+                    : 'Enter your account details to continue.'}
+                </p>
 
-              <form onSubmit={submit} className="login-form">
-                {isSignup ? (
+                <form onSubmit={submit} className="login-form" aria-busy={loading || googleLoading}>
+                  {isSignup ? (
+                    <label className="field">
+                      <span>Full name</span>
+                      <div className="input-with-icon">
+                        <Icon name="user" size={18} />
+                        <input
+                          type="text"
+                          value={form.name}
+                          onChange={(event) => update('name', event.target.value)}
+                          placeholder="Your full name"
+                          autoComplete="name"
+                          minLength={2}
+                          required
+                        />
+                      </div>
+                    </label>
+                  ) : null}
+
                   <label className="field">
-                    <span>Full name</span>
+                    <span>Email address</span>
                     <div className="input-with-icon">
-                      <Icon name="user" size={18} />
+                      <Icon name="mail" size={18} />
                       <input
-                        type="text"
-                        value={form.name}
-                        onChange={(event) => update('name', event.target.value)}
-                        placeholder="Your full name"
-                        autoComplete="name"
-                        minLength={2}
+                        type="email"
+                        value={form.email}
+                        onChange={(event) => update('email', event.target.value)}
+                        placeholder="name@example.com"
+                        autoComplete="email"
                         required
                       />
                     </div>
                   </label>
-                ) : null}
 
-                <label className="field">
-                  <span>Email address</span>
-                  <div className="input-with-icon">
-                    <Icon name="mail" size={18} />
-                    <input
-                      type="email"
-                      value={form.email}
-                      onChange={(event) => update('email', event.target.value)}
-                      placeholder="name@example.com"
-                      autoComplete="email"
-                      required
-                    />
-                  </div>
-                </label>
+                  <label className="field">
+                    <span>Password</span>
+                    <div className="input-with-icon">
+                      <Icon name="lock" size={18} />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={form.password}
+                        onChange={(event) => update('password', event.target.value)}
+                        placeholder={isSignup ? 'At least 6 characters' : 'Enter your password'}
+                        autoComplete={isSignup ? 'new-password' : 'current-password'}
+                        minLength={6}
+                        required
+                      />
+                      <button
+                        className="password-toggle"
+                        type="button"
+                        onClick={() => setShowPassword((value) => !value)}
+                      >
+                        {showPassword ? 'Hide' : 'Show'}
+                      </button>
+                    </div>
+                  </label>
 
-                <label className="field">
-                  <span>Password</span>
-                  <div className="input-with-icon">
-                    <Icon name="lock" size={18} />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={form.password}
-                      onChange={(event) => update('password', event.target.value)}
-                      placeholder={isSignup ? 'At least 6 characters' : 'Enter your password'}
-                      autoComplete={isSignup ? 'new-password' : 'current-password'}
-                      minLength={6}
-                      required
-                    />
-                    <button
-                      className="password-toggle"
-                      type="button"
-                      onClick={() => setShowPassword((value) => !value)}
-                    >
-                      {showPassword ? 'Hide' : 'Show'}
-                    </button>
-                  </div>
-                </label>
+                  {error ? <InlineNotice tone="error" title="Please check">{error}</InlineNotice> : null}
 
-                {error ? <InlineNotice tone="error" title="Please check">{error}</InlineNotice> : null}
+                  <button className="btn btn-primary btn-block" type="submit" disabled={loading || googleLoading}>
+                    {loading
+                      ? isSignup
+                        ? 'Creating account...'
+                        : 'Signing in...'
+                      : isSignup
+                        ? 'Create account'
+                        : 'Sign in'}
+                    {!loading ? <Icon name="chevronRight" size={17} /> : null}
+                  </button>
+                </form>
 
-                <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
-                  {loading
-                    ? isSignup
-                      ? 'Creating account...'
-                      : 'Signing in...'
-                    : isSignup
-                      ? 'Create account'
-                      : 'Sign in'}
-                  {!loading ? <Icon name="chevronRight" size={17} /> : null}
-                </button>
-              </form>
-
-              {isSignup ? (
-                <div className="auth-note">
-                  <Icon name="info" size={15} />
-                  <span>
-                    New accounts are created as health workers. Use any email and a password of at
-                    least 6 characters.
-                  </span>
+                <div className="auth-divider">
+                  <span>or continue with</span>
                 </div>
-              ) : null}
+
+                <button
+                  className="google-button"
+                  type="button"
+                  onClick={startGoogle}
+                  disabled={googleLoading}
+                  aria-busy={googleLoading}
+                >
+                  <GoogleIcon />
+                  <span>{googleLoading ? 'Connecting to Google...' : 'Continue with Google'}</span>
+                </button>
+
+                  {isSignup ? (
+                    <div className="auth-note">
+                      <Icon name="info" size={15} />
+                      <span>New accounts are health workers. Password: 6+ characters.</span>
+                    </div>
+                  ) : null}
+              </div>
             </div>
           </div>
         </div>

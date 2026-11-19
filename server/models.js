@@ -22,6 +22,12 @@ const userSchema = new Schema(
       type: String,
       required: [true, 'Password hash is required'],
     },
+    googleId: {
+      type: String,
+      default: null,
+      index: true,
+      sparse: true,
+    },
     role: {
       type: String,
       required: [true, 'Role is required'],

@@ -1,10 +1,12 @@
+import { randomBytes } from 'node:crypto'
 import { compareSync, hashSync } from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { badRequest, forbidden, unauthorized } from './errors.js'
-import { createUser, findUserByEmail } from './store.js'
+import { createUser, findUserByEmail, linkUserGoogleId } from './store.js'
 
 const { sign, verify } = jwt
 const secret = process.env.JWT_SECRET?.trim() || 'dev-only-secret-change-me'
+const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim()
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function publicUser(user) {
@@ -57,6 +59,75 @@ export async function login(email, password) {
   const user = await findUserByEmail(credentials.email)
   if (!user || !compareSync(credentials.password, user.passwordHash)) {
     throw unauthorized('Incorrect email or password')
+  }
+
+  return { token: tokenFor(user), user: publicUser(user) }
+}
+
+async function googleProfile(accessToken) {
+  if (!googleClientId) {
+    throw badRequest('Google sign-in is not configured', 'GOOGLE_NOT_CONFIGURED')
+  }
+  if (typeof accessToken !== 'string' || !accessToken.trim()) {
+    throw badRequest('Google access token is required')
+  }
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
+  let response
+
+  try {
+    response = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(accessToken.trim())}`,
+      { signal: controller.signal },
+    )
+  } catch {
+    throw unauthorized('Google could not be reached. Please try again.')
+  } finally {
+    clearTimeout(timeout)
+  }
+
+  if (!response.ok) throw unauthorized('Your Google session expired. Please try again.')
+
+  const profile = await response.json().catch(() => null)
+  const email = String(profile?.email || '').trim().toLowerCase()
+  const scopes = String(profile?.scope || '').split(' ')
+  const isVerified = profile?.email_verified === true || profile?.email_verified === 'true'
+  const isAllowedClient = profile?.aud === googleClientId || profile?.azp === googleClientId
+
+  if (!profile?.sub || !isAllowedClient || !isVerified || !emailPattern.test(email) || !scopes.includes('email')) {
+    throw unauthorized('Google account could not be verified for this app')
+  }
+
+  const rawName = String(profile.name || '').trim().replace(/\s+/g, ' ')
+  const name =
+    rawName.length >= 2 ? rawName.slice(0, 80) : email.split('@')[0].slice(0, 80)
+
+  return { email, name, googleId: String(profile.sub) }
+}
+
+export async function googleSignIn(body) {
+  const profile = await googleProfile(body?.accessToken)
+  let user = await findUserByEmail(profile.email)
+
+  if (user) {
+    const userId = (user.id ?? user._id)?.toString()
+    if (user.googleId && user.googleId !== profile.googleId) {
+      throw unauthorized('This email is linked to a different Google account')
+    }
+    if (!user.googleId) {
+      user = await linkUserGoogleId(userId, profile.googleId)
+      if (!user) throw unauthorized('Your account could not be found. Please try again.')
+    }
+  } else {
+    user = await createUser({
+      name: profile.name,
+      email: profile.email,
+      role: 'health_worker',
+      sector: '',
+      googleId: profile.googleId,
+      passwordHash: hashSync(randomBytes(32).toString('hex'), 12),
+    })
   }
 
   return { token: tokenFor(user), user: publicUser(user) }

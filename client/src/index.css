@@ -228,23 +228,35 @@
   }
 
   .landing-nav-link {
-    @apply rounded-lg border-0 bg-transparent px-3 py-2 text-[12px] font-semibold text-muted transition hover:bg-water-50 hover:text-water-700;
+    @apply inline-flex items-center gap-1.5 rounded-lg border-0 bg-transparent px-3 py-2 text-[12px] font-semibold text-muted transition hover:bg-water-50 hover:text-water-700;
+  }
+
+  .landing-nav-link svg {
+    @apply shrink-0 text-water-600;
   }
 
   .landing-nav-link-active {
     @apply bg-water-50 text-water-700;
   }
 
+  .landing-nav-link-active svg {
+    @apply text-water-700;
+  }
+
   .landing-nav-actions {
     @apply flex items-center gap-2;
   }
 
+  .landing-auth-actions {
+    @apply inline-flex items-center gap-1 rounded-full border border-line bg-white/85 p-1 shadow-sm backdrop-blur;
+  }
+
   .landing-signin {
-    @apply px-4 py-2 text-[12px];
+    @apply rounded-full border-transparent bg-transparent px-3.5 py-1.5 text-[12px] text-muted shadow-none hover:bg-water-50 hover:text-water-700;
   }
 
   .landing-create {
-    @apply px-4 py-2 text-[12px];
+    @apply rounded-full px-3.5 py-1.5 text-[12px];
   }
 
   .landing-menu-button {
@@ -257,6 +269,18 @@
 
   .landing-nav-mobile .landing-nav-link {
     @apply rounded-xl px-3 py-2.5 text-left hover:bg-water-50;
+  }
+
+  .landing-nav-mobile-auth {
+    @apply grid grid-cols-2 gap-2 border-t border-line pt-2;
+  }
+
+  .landing-nav-mobile-auth .landing-nav-link {
+    @apply justify-center px-2 py-2 text-[11px];
+  }
+
+  .landing-nav-mobile-auth .landing-nav-link:last-child {
+    @apply bg-water-600 text-white hover:bg-water-700 hover:text-white;
   }
 
   .login-page {
@@ -725,11 +749,17 @@
   }
 
   .landing-footer {
-    @apply border-t border-water-100 bg-water-50 px-6 py-8 lg:px-12;
+    @apply border-t border-white/10 px-6 py-8 text-emerald-100 lg:px-12;
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 55%, #047857 100%);
   }
 
   .landing-footer-grid {
-    @apply mx-auto grid max-w-[1400px] gap-6 md:grid-cols-[1.45fr_0.6fr_1fr];
+    @apply mx-auto grid max-w-[1400px] grid-cols-2 gap-4 md:gap-6 lg:grid-cols-[1.35fr_0.65fr_1.1fr_1.15fr];
+  }
+
+  .landing-footer-brand,
+  .landing-footer-project {
+    @apply col-span-2;
   }
 
   .landing-footer-brand-row {
@@ -737,19 +767,19 @@
   }
 
   .landing-footer-brand-row strong {
-    @apply block text-sm font-extrabold text-ink;
+    @apply block text-sm font-extrabold text-white;
   }
 
   .landing-footer-kicker {
-    @apply mt-0.5 block text-[9px] font-bold uppercase tracking-[0.16em] text-water-600;
+    @apply mt-0.5 block text-[9px] font-bold uppercase tracking-[0.16em] text-emerald-200;
   }
 
   .landing-footer-brand p {
-    @apply mt-3 max-w-[350px] text-[11px] leading-relaxed text-muted;
+    @apply mt-3 max-w-[350px] text-[11px] leading-relaxed text-emerald-100/80;
   }
 
   .landing-footer h4 {
-    @apply mb-2.5 text-[9px] font-extrabold uppercase tracking-[0.16em] text-ink;
+    @apply mb-2.5 text-[9px] font-extrabold uppercase tracking-[0.16em] text-white;
   }
 
   .landing-footer ul {
@@ -757,20 +787,20 @@
   }
 
   .landing-footer li button {
-    @apply inline-flex items-center gap-2 border-0 bg-transparent p-0 text-[11px] font-medium text-muted transition hover:text-water-700;
+    @apply inline-flex items-center gap-2 border-0 bg-transparent p-0 text-[11px] font-medium text-emerald-100/80 transition hover:text-white;
   }
 
   .landing-footer li button::before {
     content: '';
-    @apply h-1 w-1 rounded-full bg-water-300 transition;
+    @apply h-1 w-1 rounded-full bg-emerald-300 transition;
   }
 
   .landing-footer li button:hover::before {
-    @apply bg-brand-green;
+    @apply bg-white;
   }
 
   .landing-footer-project {
-    @apply rounded-2xl border border-water-100 bg-white/80 p-4;
+    @apply rounded-2xl border border-white/15 p-4;
   }
 
   .landing-footer-details {
@@ -778,15 +808,31 @@
   }
 
   .landing-footer-details span {
-    @apply inline-flex items-start gap-2 text-[10.5px] leading-relaxed text-muted;
+    @apply inline-flex items-start gap-2 text-[10.5px] leading-relaxed text-emerald-50/85;
   }
 
   .landing-footer-details svg {
-    @apply mt-0.5 shrink-0 text-water-600;
+    @apply mt-0.5 shrink-0 text-emerald-200;
+  }
+
+  .landing-footer-contact {
+    @apply rounded-2xl border border-white/15 p-4;
+  }
+
+  .landing-footer-contact-list {
+    @apply grid gap-2;
+  }
+
+  .landing-footer-contact-list a {
+    @apply inline-flex items-start gap-2 break-all text-[10.5px] leading-relaxed text-emerald-50/85 transition hover:text-white;
+  }
+
+  .landing-footer-contact-list svg {
+    @apply mt-0.5 shrink-0 text-emerald-200;
   }
 
   .landing-footer-bottom {
-    @apply -mx-6 mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-water-200 bg-water-100/60 px-6 py-3 text-[10px] text-muted lg:-mx-12 lg:px-12;
+    @apply -mx-6 mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-black/10 px-6 py-3 text-[10px] text-emerald-100/80 lg:-mx-12 lg:px-12;
   }
 
   .landing-footer-bottom-meta {
@@ -794,7 +840,7 @@
   }
 
   .landing-footer-top {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-water-200 bg-white px-3 py-1 text-[10px] font-bold text-water-700 transition hover:border-water-300 hover:bg-water-100;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold text-white transition hover:border-white/40 hover:bg-white/20;
   }
 
   .login-panel {
@@ -814,15 +860,33 @@
   }
 
   .auth-mode-switch {
-    @apply mb-4 grid grid-cols-2 gap-1 rounded-xl border border-line bg-water-50 p-1;
+    @apply relative mb-4 grid grid-cols-2 gap-1 overflow-hidden rounded-xl border border-line bg-water-50 p-1;
+  }
+
+  .auth-mode-switch-thumb {
+    @apply absolute bottom-1 left-1 top-1 rounded-lg bg-white shadow-sm;
+    width: calc(50% - 0.375rem);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .auth-mode-switch-signup .auth-mode-switch-thumb {
+    transform: translateX(calc(100% + 0.25rem));
   }
 
   .auth-mode-switch button {
-    @apply rounded-lg border-0 bg-transparent px-3 py-2 text-[11px] font-bold text-muted transition hover:text-water-700;
+    @apply relative z-10 rounded-lg border-0 bg-transparent px-3 py-2 text-[11px] font-bold text-muted transition-colors duration-200 hover:text-water-700;
   }
 
   .auth-mode-switch button.is-active {
-    @apply bg-white text-water-700 shadow-sm;
+    @apply text-water-700;
+  }
+
+  .auth-mode-content {
+    animation: auth-content-in-login 0.24s ease-out both;
+  }
+
+  .auth-mode-content-signup {
+    animation-name: auth-content-in-signup;
   }
 
   .role-picker {
@@ -878,6 +942,28 @@
     @apply shrink-0 text-water-600;
   }
 
+  .auth-divider {
+    @apply my-3 flex items-center gap-3 text-[10px] uppercase tracking-[0.08em] text-muted-2;
+  }
+
+  .auth-divider::before,
+  .auth-divider::after {
+    content: '';
+    @apply h-px flex-1 bg-line;
+  }
+
+  .auth-divider span {
+    @apply shrink-0;
+  }
+
+  .google-button {
+    @apply flex w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-white px-4 py-2.5 text-[12px] font-bold text-ink transition hover:border-water-300 hover:bg-water-50 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .google-icon {
+    @apply h-[18px] w-[18px] shrink-0;
+  }
+
   .auth-overlay {
     @apply fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-ink/55 p-4 backdrop-blur-sm sm:p-6;
   }
@@ -931,6 +1017,94 @@
     @apply right-2 text-[10px];
   }
 
+  .auth-dialog-compact {
+    @apply max-w-[400px] p-4 sm:p-5;
+  }
+
+  .auth-dialog-compact .auth-close {
+    @apply right-3 top-3;
+  }
+
+  .auth-dialog-compact .auth-dialog-head {
+    @apply mb-2 gap-2 pr-9;
+  }
+
+  .auth-dialog-compact .auth-dialog-head .brand-mark {
+    @apply h-9 w-9;
+  }
+
+  .auth-dialog-compact .auth-dialog-head strong {
+    @apply text-[12px];
+  }
+
+  .auth-dialog-compact .auth-dialog-head small {
+    @apply text-[9px];
+  }
+
+  .auth-dialog-compact .auth-mode-switch {
+    @apply mb-3;
+  }
+
+  .auth-dialog-compact .auth-mode-switch button {
+    @apply py-1.5 text-[10px];
+  }
+
+  .auth-dialog-compact .login-card h2 {
+    @apply text-[20px];
+  }
+
+  .auth-dialog-compact .login-card > p {
+    @apply mt-1 text-[11px] leading-snug;
+  }
+
+  .auth-dialog-compact .login-form {
+    @apply gap-2;
+  }
+
+  .auth-dialog-compact .field {
+    @apply gap-1;
+  }
+
+  .auth-dialog-compact .field > span {
+    @apply text-[9px];
+  }
+
+  .auth-dialog-compact .field input {
+    @apply py-2 text-[12px];
+  }
+
+  .auth-dialog-compact .input-with-icon input {
+    @apply pl-8 pr-12;
+  }
+
+  .auth-dialog-compact .input-with-icon svg {
+    @apply left-2.5;
+  }
+
+  .auth-dialog-compact .password-toggle {
+    @apply right-1.5 text-[9px];
+  }
+
+  .auth-dialog-compact .btn-block {
+    @apply py-2 text-[12px];
+  }
+
+  .auth-dialog-compact .auth-divider {
+    @apply my-2 text-[9px];
+  }
+
+  .auth-dialog-compact .google-button {
+    @apply gap-2 px-3 py-2 text-[11px];
+  }
+
+  .auth-dialog-compact .google-icon {
+    @apply h-4 w-4;
+  }
+
+  .auth-dialog-compact .auth-note {
+    @apply mt-2 border-t-0 pt-0 text-[9px];
+  }
+
   @keyframes auth-pop {
     from {
       opacity: 0;
@@ -939,6 +1113,28 @@
     to {
       opacity: 1;
       transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes auth-content-in-login {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes auth-content-in-signup {
+    from {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
     }
   }
 
@@ -952,6 +1148,11 @@
     .login-showcase::before,
     .login-showcase::after {
       display: block;
+    }
+
+    .landing-footer-brand,
+    .landing-footer-project {
+      @apply col-span-1;
     }
   }
 
@@ -997,12 +1198,31 @@
     .landing-footer {
       @apply px-5 py-7;
     }
+
+    .landing-footer-grid {
+      @apply gap-x-3 gap-y-4;
+    }
+
+    .landing-footer-project,
+    .landing-footer-contact {
+      @apply p-3;
+    }
+
+    .landing-footer-bottom {
+      @apply mt-4;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .hero-bg-slide,
-    .showcase-image-frame {
+    .showcase-image-frame,
+    .auth-dialog,
+    .auth-mode-content {
       animation: none;
+    }
+
+    .auth-mode-switch-thumb {
+      transition: none;
     }
   }
 }

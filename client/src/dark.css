@@ -299,7 +299,6 @@
   .work-step,
   .secondary-visual-caption,
   .secondary-visual-icon,
-  .landing-footer-project,
   .landing-footer-top,
   .login-panel,
   .login-card,
@@ -311,10 +310,26 @@
   .app-footer-pill,
   .btn-on-dark,
   .point-chip,
-  .btn-ghost,
-  .auth-mode-switch button.is-active
+  .btn-ghost
 ) {
   background-color: #0d2438;
+}
+
+:root[data-theme='dark'] :is(.auth-mode-switch-thumb, .google-button) {
+  background-color: #0d2438;
+}
+
+:root[data-theme='dark'] .landing-nav-link svg {
+  color: inherit;
+}
+
+:root[data-theme='dark'] .landing-auth-actions {
+  background-color: rgba(13, 36, 56, 0.85);
+  border-color: #17415f;
+}
+
+:root[data-theme='dark'] .landing-signin {
+  background-color: transparent;
 }
 
 :root[data-theme='dark'] :is(.showcase-image-frame, .showcase-thumb, .showcase-thumb img, .secondary-visual-icon) {
@@ -325,7 +340,6 @@
   .nav-item-active,
   .app-footer,
   .landing-nav-link-active,
-  .landing-footer,
   .auth-mode-switch,
   .role-option-active,
   .form-step,
@@ -360,10 +374,6 @@
 
 :root[data-theme='dark'] .stepper-number {
   background-color: #103049;
-}
-
-:root[data-theme='dark'] .landing-footer-bottom {
-  background-color: rgba(16, 48, 73, 0.7);
 }
 
 :root[data-theme='dark'] :is(.review-list, .log-example) {
@@ -643,14 +653,25 @@
 
 :root[data-theme='dark'] :is(
   .app-footer,
-  .landing-footer,
-  .landing-footer-project,
-  .landing-footer-bottom,
-  .landing-footer-top,
   .app-footer-pill,
   .role-health_worker,
   .queue-open
 ) {
   border-color: #17415f;
+}
+
+:root[data-theme='dark'] :is(.landing-footer h4, .landing-footer-brand-row strong, .landing-footer-top) {
+  color: #ffffff;
+}
+
+:root[data-theme='dark'] :is(
+  .landing-footer-kicker,
+  .landing-footer-brand p,
+  .landing-footer li button,
+  .landing-footer-details span,
+  .landing-footer-contact-list a,
+  .landing-footer-bottom
+) {
+  color: rgba(209, 250, 229, 0.82);
 }
 

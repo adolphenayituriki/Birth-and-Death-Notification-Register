@@ -6,6 +6,7 @@ const clientRoot = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig({
   root: clientRoot,
+  envDir: fileURLToPath(new URL('..', import.meta.url)),
   plugins: [tailwindcss()],
   publicDir: 'public',
   esbuild: {

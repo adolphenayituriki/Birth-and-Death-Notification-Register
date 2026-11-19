@@ -110,6 +110,7 @@ export async function api(path, options = {}) {
 export const apiEndpoints = {
   signup: (body) => api('/auth/signup', { method: 'POST', body, auth: false, label: 'signup' }),
   login: (body) => api('/auth/login', { method: 'POST', body, auth: false, label: 'login' }),
+  google: (body) => api('/auth/google', { method: 'POST', body, auth: false, label: 'google_signin' }),
   me: () => api('/auth/me', { label: 'current_user' }),
   stats: () => api('/dashboard/stats', { label: 'dashboard_stats' }),
   notifications: (query = '') => api(`/notifications${query}`, { label: 'list_notifications' }),

@@ -2,14 +2,14 @@
 
 A full-stack classroom project for recording birth and death notifications. Health workers submit guided notifications; registrars review them, set the final status, and track monthly totals. The register prevents duplicate records using `person_name` + `event_date` and rejects future event dates.
 
-The UI is a responsive React dashboard styled with Tailwind CSS in a white and water-blue theme. It includes role-aware navigation, sortable/filterable lists, pagination, loading/empty/error states, a live request terminal, and classroom activities.
+The UI is a responsive React dashboard styled with Tailwind CSS in a white and water-blue theme. It includes role-aware navigation, sortable/filterable lists, pagination, loading/empty/error states, and classroom activities.
 
 ## Tech stack
 
 - **Client:** React 19 + Vite + Tailwind CSS 4
 - **Server:** Node.js + Express
 - **Database:** MongoDB with Mongoose schemas
-- **Authentication:** JWT plus bcrypt password hashing
+- **Authentication:** JWT plus bcrypt password hashing, with optional Google OAuth sign-in
 - **Fallback:** If `MONGODB_URI` is blank or MongoDB is unreachable, the API runs in an in-memory fallback mode with the same 10 seeded notifications, so the project is always runnable.
 
 ## What the system does
@@ -75,6 +75,17 @@ PORT=4000
 
 The server prints `storage: mongodb` or `storage: memory fallback` on startup. With MongoDB, collections are created from strict Mongoose schemas and seeded automatically when empty. If the database cannot be reached, the same seed data is kept in process memory and resets when the server restarts.
 
+### Google sign-in
+
+The auth dialog includes **Continue with Google**. To activate it, create an OAuth client ID of type *Web application* in Google Cloud, add `http://localhost:5173` and your deployed HTTPS origin as authorized JavaScript origins, and add the same client ID to both variables:
+
+```env
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id
+```
+
+Restart both servers after changing these values. The server verifies Google access tokens and creates first-time Google users as health workers; existing verified emails sign in to their current account.
+
 ## Database design
 
 MongoDB uses `_id` as the primary key. `notifications.reporter_id` references `users._id` through a Mongoose `ref`. Required fields use `required: true` (the Mongo equivalent of `NOT NULL`), with enums, trimmed strings and a compound unique index for duplicates.
@@ -87,6 +98,7 @@ MongoDB uses `_id` as the primary key. `notifications.reporter_id` references `u
 | `name` | String | Required, trimmed, max 80 |
 | `email` | String | Required, unique, lowercase |
 | `passwordHash` | String | Required, bcrypt hash; never returned by the API |
+| `googleId` | String | Optional Google account identifier for OAuth users |
 | `role` | String | Required, one of `health_worker`, `registrar` |
 | `sector` | String | Trimmed, max 80 |
 | `createdAt` / `updatedAt` | Date | Automatic timestamps |
@@ -114,6 +126,7 @@ All responses are JSON. Every endpoint except `/api/health` and auth requires `A
 | GET | `/api/health` | public | Health and storage mode |
 | POST | `/api/auth/signup` | public | Create health worker account |
 | POST | `/api/auth/login` | public | Get JWT token |
+| POST | `/api/auth/google` | public | Exchange a verified Google access token for a JWT |
 | GET | `/api/auth/me` | auth | Current user |
 | GET | `/api/dashboard/stats` | auth | Totals for the dashboard |
 | GET | `/api/notifications` | auth | List; `page`, `limit`, `sort`, `search`, `type`, `status` |
@@ -132,7 +145,7 @@ Sort syntax is `field:direction`, for example `?sort=person_name:asc` or `?sort=
 }
 ```
 
-Errors use `{ "error": { "message": "...", "code": "..." } }`. Codes include `VALIDATION_ERROR`, `FUTURE_EVENT_DATE`, `DUPLICATE_NOTIFICATION`, `NOTIFICATION_NOT_FOUND`, `FORBIDDEN`, `EMAIL_TAKEN` and `ROUTE_NOT_FOUND`.
+Errors use `{ "error": { "message": "...", "code": "..." } }`. Codes include `VALIDATION_ERROR`, `FUTURE_EVENT_DATE`, `DUPLICATE_NOTIFICATION`, `NOTIFICATION_NOT_FOUND`, `FORBIDDEN`, `EMAIL_TAKEN`, `GOOGLE_NOT_CONFIGURED` and `ROUTE_NOT_FOUND`.
 
 ## Server logs
 
@@ -142,27 +155,13 @@ Every request writes one structured line to the terminal, for example:
 [2026-11-18T10:32:14.021Z] [req-4] POST /api/notifications -> 201 (42ms) action=create_notification role=health_worker notification=668... type=birth
 ```
 
-The client shows the same request/response shape in its **Request terminal** panel so log reading can be done without leaving the browser.
-
 ## Classroom activities
 
 ### 1. Role play
 
 Open **Classroom activities**, pick health worker or registrar, and complete that role's checklist. Health workers create a notification; registrars clear the review queue.
 
-### 2. Code review
-
-The activity shows the Express role middleware:
-
-```js
-if (!req.user) return next(unauthorized())
-if (!roles.includes(req.user.role)) return next(forbidden())
-next()
-```
-
-Predict which roles can pass, then reveal the answer: only `registrar` for status changes and analytics.
-
-### 3. Break the duplicate check
+### 2. Break the duplicate check
 
 Press **Load sample** to copy a seeded name and event date, then press **Test duplicate**. The server returns `400 Bad Request`:
 

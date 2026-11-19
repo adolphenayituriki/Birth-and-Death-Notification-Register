@@ -17,14 +17,9 @@ const roleTasks = {
   ],
 }
 
-const reviewCode = `if (!req.user) return next(unauthorized())
-if (!roles.includes(req.user.role)) return next(forbidden())
-next()`
-
 export default function Activities({ user, navigate, notify }) {
   const [role, setRole] = useState(user.role)
   const [checked, setChecked] = useState([])
-  const [reviewResult, setReviewResult] = useState('')
   const [duplicate, setDuplicate] = useState({ person_name: 'Amara Wanjiku', event_date: '' })
   const [duplicateResult, setDuplicateResult] = useState(null)
   const [testing, setTesting] = useState(false)
@@ -131,25 +126,6 @@ export default function Activities({ user, navigate, notify }) {
 
         <section className="panel activity-card">
           <span className="activity-number">02</span>
-          <span className="activity-icon activity-icon-violet"><Icon name="shield" size={21} /></span>
-          <h3>Code review</h3>
-          <p>Who can pass this middleware?</p>
-          <div className="log-example">
-            <span>server/auth.js</span>
-            <code>{reviewCode}</code>
-          </div>
-          <div className="activity-actions">
-            <button className="btn btn-secondary" type="button" onClick={() => setReviewResult('registrar only')}>
-              Reveal answer
-            </button>
-          </div>
-          {reviewResult ? (
-            <div className="mini-result">Allowed roles: <strong>{reviewResult}</strong></div>
-          ) : null}
-        </section>
-
-        <section className="panel activity-card">
-          <span className="activity-number">03</span>
           <span className="activity-icon activity-icon-rose"><Icon name="bolt" size={21} /></span>
           <h3>Break the duplicate check</h3>
           <p>Load a sample, then submit it again.</p>
