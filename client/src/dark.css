@@ -224,6 +224,10 @@
   opacity: 0.1;
 }
 
+:root[data-theme='dark'] .kids-logo {
+  filter: drop-shadow(0 10px 14px rgba(56, 189, 248, 0.24));
+}
+
 :root[data-theme='dark'] .landing-cta {
   background: #0a2018;
   border-color: #1f4a35;

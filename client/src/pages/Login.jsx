@@ -160,6 +160,32 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
     return () => window.removeEventListener('scroll', updateActiveSection)
   }, [])
 
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) return undefined
+    if (!('IntersectionObserver' in window)) return undefined
+    const nodes = Array.from(document.querySelectorAll('[data-reveal]'))
+    if (!nodes.length) return undefined
+
+    document.documentElement.classList.add('motion-ready')
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            observer.unobserve(entry.target)
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
+    )
+    nodes.forEach((node) => observer.observe(node))
+
+    return () => {
+      observer.disconnect()
+      document.documentElement.classList.remove('motion-ready')
+    }
+  }, [])
+
   const scrollTo = (id) => {
     setMenuOpen(false)
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -263,7 +289,6 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
               aria-current={activeSection === link.id ? 'page' : undefined}
               onClick={() => scrollTo(link.id)}
             >
-              <Icon name={link.icon} size={15} />
               {link.label}
             </button>
           ))}
@@ -338,7 +363,7 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
             </div>
           </div>
 
-          <div className="showcase-copy">
+          <div className="showcase-copy" data-reveal>
             <span className="eyebrow eyebrow-light">Built for accurate civil registration</span>
             <h1>
               Every event,
@@ -358,7 +383,7 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
             </div>
           </div>
 
-          <div className="showcase-visual" id="how-it-works">
+          <div className="showcase-visual" id="how-it-works" data-reveal="late">
             <div className="showcase-image-frame">
               <img
                 src={assets.serviceMain}
@@ -370,7 +395,11 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
 
         <section className="hero-secondary" id="features">
           <div className="hero-secondary-inner">
-            <div className="secondary-copy">
+            <div className="secondary-copy" data-reveal>
+              <div className="kids-logo-row" aria-hidden="true">
+                <img className="kids-logo kids-logo-left" src={assets.logo} alt="" />
+                <img className="kids-logo kids-logo-right" src={assets.logo} alt="" />
+              </div>
               <span className="eyebrow">How the system works</span>
               <h2>From notification to certified record in three steps.</h2>
               <p>
@@ -408,7 +437,7 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
               </div>
             </div>
 
-            <div className="secondary-visual">
+            <div className="secondary-visual" data-reveal="late">
               <div className="showcase-thumb">
                 <img
                   src={assets.serviceAlt}
@@ -429,12 +458,12 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
       </main>
 
       <section className="landing-cta" id="get-started">
-        <div className="landing-cta-copy">
+        <div className="landing-cta-copy" data-reveal>
           <span className="eyebrow">Start with the register</span>
           <h2>Ready to keep every notification clear?</h2>
           <p>Sign in to your account or create a health worker account in a few seconds.</p>
         </div>
-        <div className="landing-cta-actions">
+        <div className="landing-cta-actions" data-reveal="late">
           <button className="btn btn-primary" type="button" onClick={() => openAuth('login')}>
             Sign in <Icon name="chevronRight" size={17} />
           </button>
@@ -445,7 +474,7 @@ export default function Login({ onAuth, theme, onToggleTheme }) {
       </section>
 
       <footer className="landing-footer" id="contact">
-        <div className="landing-footer-grid">
+        <div className="landing-footer-grid" data-reveal>
           <div className="landing-footer-brand">
             <div className="landing-footer-brand-row">
               <span className="landing-footer-mark">
